@@ -11,26 +11,17 @@ public class TrivialFiller implements IFiller {
 
     @Override
     public List<Knapsack> fill(Catalog c) {
-        
         List<Knapsack> sacks = new ArrayList<Knapsack>();
-        int item = 0;
-        
+        int item = 1;
         // Generate as many knapsacks as necessary
-        for(int k = 0; k < c.knapsackCapacities.length; k++){
-            Knapsack newSack = new Knapsack(k, c.knapsackCapacities[k]);
-            
+        for(Knapsack k : c.getAllEmptyKnapsacks()){
             // while it is not full, add something new
-            
-            while(newSack.currentWeight() < newSack.capacity){
-                newSack.items.add(c.items.get(++item));
-            }
-            // remove the last item, because that made it go over
-            newSack.items.remove(c.items.get(--item));
-            
-            sacks.add(newSack);
+            while(k.currentWeight() + c.items.get(item).weight <= k.capacity){
+                k.items.add(c.items.get(item));
+                item++;
+            }            
+            sacks.add(k);
         }
-        
         return sacks;
     }
-
 }

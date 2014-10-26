@@ -23,20 +23,45 @@ public class Catalog {
 
     public final int objectCount;
 
+    public final int knapsackCount;
+    
+    /**
+     * Knapsack ids are 1-indexed, so this array contains one more element than absolutely necessary
+     */
     public final int[] knapsackCapacities;
 
+    /**
+     * Object ids are 1-indexed, so this matrix contains one more row and column than absolutely necessary
+     */
     public final int[][] profitMatrix;
 
-    private Catalog(int type, int count, List<Integer> capacities) {
+    public Catalog(int type, int count, List<Integer> capacities) {
         problemType = type;
         objectCount = count;
-        knapsackCapacities = new int[capacities.size()];
-        for (int i = 0; i < capacities.size(); i++) {
-            knapsackCapacities[i] = capacities.get(i);
+        knapsackCount = capacities.size();
+        knapsackCapacities = new int[knapsackCount + 1];
+        for (int i = 0; i < knapsackCount; i++) {
+            knapsackCapacities[i + 1] = capacities.get(i);
         }
-        profitMatrix = new int[objectCount][objectCount];
+        profitMatrix = new int[objectCount + 1][objectCount + 1];
     }
 
+    /**
+     * Returns a new instance of a knapsack with the specified id
+     * that reflects the capacity and constraints of the problem 
+     */
+    public Knapsack getEmptyKnapsack(int id){
+        return new Knapsack(this, id, knapsackCapacities[id]);
+    }
+    
+    public List<Knapsack> getAllEmptyKnapsacks(){
+        List<Knapsack> allSacks = new ArrayList<Knapsack>();
+        for(int i = 1; i <= knapsackCount; i++){
+            allSacks.add(getEmptyKnapsack(i));
+        }
+        return allSacks;
+    }
+    
     public static Catalog parseFile(String filepath) throws IOException {
         return parse(new FileInputStream(new File(filepath)));
     }
@@ -88,10 +113,10 @@ public class Catalog {
                 throw new RuntimeException("Expected blank line in input");
             }
             // parse matrix of combination profits
-            for (int i = 0; i < objectCount; i++) {
+            for (int i = 1; i <= objectCount; i++) {
                 String row = br.readLine();
                 String[] profits = row.split("\\s");
-                if(profits.length != objectCount - i){
+                if(profits.length != (objectCount + 1) - i){
                     throw new RuntimeException(String.format("unexpected number of columns: %d", profits.length));
                 }
                 for(int j = 0; j < objectCount - i; j++){
@@ -109,25 +134,18 @@ public class Catalog {
     private static Item parseItem(String line) {
         // read:
         // <id> <value> <weight>
-        Item i = new Item();
         String[] tok = line.trim().split("\\s");
-        i.id = Integer.parseInt(tok[0]);
-        i.value = Integer.parseInt(tok[1]);
-        i.weight = Integer.parseInt(tok[2]);
+        Item i = new Item(Integer.parseInt(tok[0]), Integer.parseInt(tok[1]), Integer.parseInt(tok[2]));
         return i;
     }
 
     private static List<Item> parseAllItems(String line) {
         // read:
         // <weight_1> <weight_2> ... <weight_n>
-
         List<Item> items = new ArrayList<Item>();
         int id = 1;
         for (String w : line.trim().split("\\s")) {
-            Item i = new Item();
-            i.id = id;
-            i.value = 0; // no inherent value
-            i.weight = Integer.parseInt(w);
+            Item i = new Item(id, 0, Integer.parseInt(w)); // no inherent value
             items.add(i);
             id++;
         }
