@@ -1,0 +1,22 @@
+Knapsack Challenge
+Heuristic Problem Solving - Fall 2014
+
+Submitted by:  DataPlayers
+  Chris Keitel (ck1456@nyu.edu)
+  Kumar Prabhu (kumar.prabhu@nyu.edu)
+
+The attached zip file contains all of the source and compiled code to produce solutions
+
+Copy the zip file to an energon machine and unzip:
+> unzip SackFiller.zip
+> cd SackFiller
+
+The SackFiller.jar in this directory is the tool used to generate solutions.
+You can invoke it with two command line arguments <input> <output>:
+> java -jar SackFiller.jar sample_1_0.in sample_1_0.out
+
+If necessary you can rebuild the jar file by using the included ant build script:
+> ant clean
+> ant
+
+Other Helpful Hints:
