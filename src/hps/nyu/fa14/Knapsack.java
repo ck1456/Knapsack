@@ -67,6 +67,19 @@ public class Knapsack {
         return weight;
     }
     
+    public Knapsack clone(){
+        Knapsack newK = new Knapsack(catalog, id, capacity);
+        for(Item i : items){
+            newK.items.add(i);
+        }
+        return newK;
+    }
+    
+    @Override
+    public String toString(){
+        return String.format("Value: %d Weight: %d Fill: %f", totalValue(), currentWeight(), (double)currentWeight() / capacity);
+    }
+    
     public static void write(List<Knapsack> knapsacks, OutputStream output) throws IOException {
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(output));
         boolean writeIds = knapsacks.size() > 1; // Only write ids if there are multiple knapsacks

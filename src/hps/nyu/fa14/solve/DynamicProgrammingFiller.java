@@ -1,7 +1,6 @@
 package hps.nyu.fa14.solve;
 
 import hps.nyu.fa14.Catalog;
-import hps.nyu.fa14.IFiller;
 import hps.nyu.fa14.Knapsack;
 
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ import java.util.List;
  * http
  * ://www.programminglogic.com/knapsack-problem-dynamic-programming-algorithm/
  */
-public class DynamicProgrammingFiller implements IFiller {
+public class DynamicProgrammingFiller extends AbstractFiller {
 
     @Override
     public List<Knapsack> fill(Catalog c) {
@@ -28,9 +27,13 @@ public class DynamicProgrammingFiller implements IFiller {
         // build memory efficient datastructure
         int[] weight = new int[c.objectCount];
         int[] value = new int[c.objectCount];
-        for (int i = 0; i < c.objectCount; i++) {
-            weight[i] = c.items.get(i + 1).weight;
-            value[i] = c.items.get(i + 1).value;
+        int[] indexLookup = new int[c.objectCount];
+        int index = 0;
+        for (int i : c.items.keySet()) {
+            weight[index] = c.items.get(i).weight;
+            value[index] = c.items.get(i).value;
+            indexLookup[index] = i;
+            index++;
         }
 
         List<Integer> picked = getMaxValue(c.getEmptyKnapsack(1).capacity,
@@ -39,14 +42,15 @@ public class DynamicProgrammingFiller implements IFiller {
         // figure out how to derive solution from that
         Knapsack k = c.getEmptyKnapsack(1);
         for(Integer id : picked){
-            k.items.add(c.items.get(id + 1));
+            k.items.add(c.items.get(indexLookup[id]));
         }
         
-        // Non-solution for now
         return Arrays.asList(k);
     }
 
     /**
+     * This implementation is time efficient, but not memory efficient
+     * and is still exponential
      * 
      * @param W
      *            total weight capacity of the knapsack

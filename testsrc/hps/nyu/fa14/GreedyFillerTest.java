@@ -17,8 +17,9 @@ public class GreedyFillerTest {
         IFiller f = new GreedyFiller();
         List<Knapsack> solution = f.fill(c);
         Knapsack k0 = solution.get(0);
-        assertEquals(203686, k0.totalValue());
-        assertEquals(165166, k0.currentWeight());
+        System.out.println(k0);
+        assertEquals(217687, k0.totalValue());
+        assertEquals(165127, k0.currentWeight());
         assertTrue(k0.isWeightAcceptable());
     }
 
@@ -29,14 +30,16 @@ public class GreedyFillerTest {
         List<Knapsack> solution = f.fill(c);
         {
             Knapsack k0 = solution.get(0);
-            assertEquals(98809, k0.totalValue());
-            assertEquals(36977, k0.currentWeight());
+            System.out.println(k0);
+            assertEquals(104657, k0.totalValue());
+            assertEquals(36963, k0.currentWeight());
             assertTrue(k0.isWeightAcceptable());
         }
         {
             Knapsack k1 = solution.get(1);
-            assertEquals(66538, k1.totalValue());
-            assertEquals(62962, k1.currentWeight());
+            System.out.println(k1);
+            assertEquals(69523, k1.totalValue());
+            assertEquals(62941, k1.currentWeight());
             assertTrue(k1.isWeightAcceptable());
         }
     }

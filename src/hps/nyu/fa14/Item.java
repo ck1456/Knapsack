@@ -1,5 +1,7 @@
 package hps.nyu.fa14;
 
+import java.util.Comparator;
+
 /**
  * An item that can be put into a knapsack. Will always have integral weight and
  * value
@@ -16,4 +18,12 @@ public class Item {
         this.value = value;
         this.weight = weight;
     }
+    
+    public static Comparator<Item> RANK_BY_RATIO = new Comparator<Item>() {
+        @Override
+        public int compare(Item i1, Item i2) {
+            return (int) Math.signum(((double)i1.value / i1.weight)
+                    - ((double)i2.value / i2.weight));
+        }
+    };
 }

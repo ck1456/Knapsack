@@ -1,13 +1,12 @@
 package hps.nyu.fa14.solve;
 
 import hps.nyu.fa14.Catalog;
-import hps.nyu.fa14.IFiller;
 import hps.nyu.fa14.Knapsack;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TrivialFiller implements IFiller {
+public class TrivialFiller extends AbstractFiller {
 
     @Override
     public List<Knapsack> fill(Catalog c) {

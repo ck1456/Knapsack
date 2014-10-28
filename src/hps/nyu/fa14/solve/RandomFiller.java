@@ -1,14 +1,13 @@
 package hps.nyu.fa14.solve;
 
 import hps.nyu.fa14.Catalog;
-import hps.nyu.fa14.IFiller;
 import hps.nyu.fa14.Knapsack;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class RandomFiller implements IFiller {
+public class RandomFiller extends AbstractFiller {
 
     @Override
     public List<Knapsack> fill(Catalog c) {

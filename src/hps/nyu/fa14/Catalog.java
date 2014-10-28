@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +62,18 @@ public class Catalog {
             allSacks.add(getEmptyKnapsack(i));
         }
         return allSacks;
+    }
+    
+    public List<Item> getItemsSortedByRatio(){
+        // get a list of all the items
+        List<Item> items = new ArrayList<Item>();
+        for (int i : this.items.keySet()) {
+            items.add(this.items.get(i));
+        }
+        // sort it by ratio value/weight in descending order
+        Collections.sort(items, Item.RANK_BY_RATIO);
+        Collections.reverse(items);
+        return items;
     }
     
     public static Catalog parseFile(String filepath) throws IOException {
