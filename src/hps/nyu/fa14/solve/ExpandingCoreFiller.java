@@ -32,7 +32,7 @@ public class ExpandingCoreFiller extends AbstractFiller {
             breakItem++;
             nextItem = items.get(breakItem);
         }
-        System.out.println("breakItem:" + breakItem);
+        //System.out.println("breakItem:" + breakItem);
        
         // A good lower bound
         bestSolution = breakSolution;
@@ -53,7 +53,13 @@ public class ExpandingCoreFiller extends AbstractFiller {
                 newC.items.put(item.id, item);
             }
             
-            IFiller subFill = new DynamicProgrammingFiller();
+            // Try the best of these two
+            // Sometimes one works much better than the other
+            FirstFiller firstToFinish = new FirstFiller();
+            firstToFinish.addFiller(new DynamicProgrammingFiller());
+            firstToFinish.addFiller(new BranchAndBoundFiller());
+            IFiller subFill = firstToFinish;
+            
             List<Knapsack> subSolutions = subFill.fill(newC);
             Knapsack subK = subSolutions.get(0);
             
@@ -79,8 +85,8 @@ public class ExpandingCoreFiller extends AbstractFiller {
         if(value > bestValue){
             bestValue = value;
             bestSolution = k;
-            System.out.println("Best: " + bestSolution);
-            notifyNewSolutiont(Arrays.asList(k));
+            //System.out.println("Best: " + bestSolution);
+            notifyNewSolution(Arrays.asList(k));
         }
     }
     

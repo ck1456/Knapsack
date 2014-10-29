@@ -11,7 +11,7 @@ import java.util.List;
  * Finds a solution to the knapsack problem by using Dynamic Programming We will
  * see if it is fast enough
  * 
- * Currently only works for small instances of problem 1 
+ * Currently only works for small instances of problem 1
  * 
  * Resources:
  * http://www.geeksforgeeks.org/dynamic-programming-set-10-0-1-knapsack-problem/
@@ -36,21 +36,27 @@ public class DynamicProgrammingFiller extends AbstractFiller {
             index++;
         }
 
-        List<Integer> picked = getMaxValue(c.getEmptyKnapsack(1).capacity,
-                weight, value, c.objectCount);
-
-        // figure out how to derive solution from that
         Knapsack k = c.getEmptyKnapsack(1);
-        for(Integer id : picked){
-            k.items.add(c.items.get(indexLookup[id]));
+        try {
+            List<Integer> picked = getMaxValue(c.getEmptyKnapsack(1).capacity,
+                    weight, value, c.objectCount);
+
+            // figure out how to derive solution from that
+            for (Integer id : picked) {
+                k.items.add(c.items.get(indexLookup[id]));
+            }
+        } catch (Exception ex) {
+            // Can happen if thread bails
+            // TODO: Is this necessary
+            // System.out.println("Thread bail");
         }
-        
+
         return Arrays.asList(k);
     }
 
     /**
-     * This implementation is time efficient, but not memory efficient
-     * and is still exponential
+     * This implementation is time efficient, but not memory efficient and is
+     * still exponential
      * 
      * @param W
      *            total weight capacity of the knapsack
@@ -61,9 +67,17 @@ public class DynamicProgrammingFiller extends AbstractFiller {
      * @param n
      *            total number of objects
      */
-    private List<Integer> getMaxValue(int W, int weight[], int value[], int n) {
+    private List<Integer> getMaxValue(int W, int weight[], int value[], int n)
+            throws Exception {
 
         // returns a list of included indexes
+        // Do a sanity to check to make sure this will work for with a
+        // reasonable amount of memory
+        double memCost = (5.0 * n * W);
+        if (memCost > 1e9) {
+            Thread.sleep(10000); // Wait 10 seconds
+            throw new Exception("Not enough memory");
+        }
 
         // Stores optimal values for partial solutions to the knapsack
         // subproblems
@@ -74,10 +88,13 @@ public class DynamicProgrammingFiller extends AbstractFiller {
         // 0 -> not considered
         // 1 -> selected
         // -1 -> not selected
-        int[][] picked = new int[n + 1][W + 1];
+        byte[][] picked = new byte[n + 1][W + 1];
 
         for (int i = 0; i <= n; i++) {
             for (int w = 0; w <= W; w++) {
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new Exception("Threadbail");
+                }
                 if (i == 0 || w == 0) {
                     // If there are no objects or the capacity is 0,
                     // then you can't put anything in the knapsack, initialize
@@ -88,7 +105,8 @@ public class DynamicProgrammingFiller extends AbstractFiller {
                     // the best of
                     // including i-th item
                     // excluding i-th item
-                    int includeValue = value[i - 1] + K[i - 1][w - weight[i - 1]];
+                    int includeValue = value[i - 1]
+                            + K[i - 1][w - weight[i - 1]];
                     int excludeValue = K[i - 1][w];
                     if (includeValue > excludeValue) {
                         K[i][w] = includeValue;
@@ -106,7 +124,7 @@ public class DynamicProgrammingFiller extends AbstractFiller {
         }
 
         // print the max value
-        System.out.println("Max Value: " + K[n][W]);
+        // System.out.println("Max Value: " + K[n][W]);
 
         // work backwards to reconstruct which elements are in the solution
         List<Integer> indexes = new ArrayList<Integer>();
@@ -114,8 +132,8 @@ public class DynamicProgrammingFiller extends AbstractFiller {
         int size = W;
         while (itemP > 0) {
             if (picked[itemP][size] == 1) {
-                indexes.add(itemP-1);
-                itemP--; //decrement the item to make a decision about it
+                indexes.add(itemP - 1);
+                itemP--; // decrement the item to make a decision about it
                 size -= weight[itemP];
             } else {
                 itemP--;

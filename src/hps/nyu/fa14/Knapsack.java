@@ -77,7 +77,7 @@ public class Knapsack {
     
     @Override
     public String toString(){
-        return String.format("Value: %d Weight: %d Fill: %f", totalValue(), currentWeight(), (double)currentWeight() / capacity);
+        return String.format("[%d] Value: %d Weight: %d Fill: %f", id, totalValue(), currentWeight(), (double)currentWeight() / capacity);
     }
     
     public static void write(List<Knapsack> knapsacks, OutputStream output) throws IOException {

@@ -20,7 +20,7 @@ public abstract class AbstractFiller implements IFiller {
 		monitors.add(monitor);
 	}
 
-	protected void notifyNewSolutiont(List<Knapsack> solution){
+	protected void notifyNewSolution(List<Knapsack> solution){
 		for(ISolutionMonitor m : monitors){
 			m.updateSolution(solution);
 		}

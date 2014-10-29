@@ -1,5 +1,6 @@
 package hps.nyu.fa14;
 
+import hps.nyu.fa14.solve.ExpandingCoreFiller;
 import hps.nyu.fa14.solve.TrivialFiller;
 
 import java.io.File;
@@ -17,10 +18,17 @@ public class SackFiller {
     private static List<Knapsack> fill(Catalog c) {
 
         // TODO: Implement this better
-        IFiller f = new TrivialFiller();
+        IFiller f = new ExpandingCoreFiller();
 
         List<Knapsack> solution = f.fill(c);
+        printSolution(solution);
         return solution;
+    }
+    
+    private static void printSolution(List<Knapsack> s){
+        for(Knapsack k : s){
+            System.out.println(k);
+        }
     }
 
     public static void main(String[] args) throws Exception {
