@@ -132,7 +132,7 @@ public class Catalog {
                 if(profits.length != (objectCount + 1) - i){
                     throw new RuntimeException(String.format("unexpected number of columns: %d", profits.length));
                 }
-                for(int j = 0; j < objectCount - i; j++){
+                for(int j = 0; j < objectCount - i + 1; j++){
                     c.profitMatrix[i][i+j] = Integer.parseInt(profits[j]);
                 }
             }

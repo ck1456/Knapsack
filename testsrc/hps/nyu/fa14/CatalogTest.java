@@ -43,6 +43,8 @@ public class CatalogTest {
         assertEquals(c.objectCount + 1, c.profitMatrix.length);
         assertEquals(c.profitMatrix.length, c.profitMatrix[0].length);
         assertEquals(55, c.profitMatrix[1][1]);
+        assertEquals(35, c.profitMatrix[2][2]);
+        assertEquals(50, c.profitMatrix[2][100]);
     }
 
 }

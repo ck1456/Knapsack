@@ -45,8 +45,9 @@ public class Knapsack {
             
             for(int i = 0; i < itemIds.length; i++ ){
                 for(int j = i; j < itemIds.length; j++){
-                    int itemId1 = itemIds[i];
-                    int itemId2 = itemIds[j];
+                    int itemId1 = Math.min(itemIds[i], itemIds[j]);
+                    int itemId2 = Math.max(itemIds[i], itemIds[j]);
+                    
                     // add the value of i,j profit
                     value += catalog.profitMatrix[itemId1][itemId2];
                 }

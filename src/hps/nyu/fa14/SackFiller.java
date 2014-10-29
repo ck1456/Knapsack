@@ -1,7 +1,7 @@
 package hps.nyu.fa14;
 
 import hps.nyu.fa14.solve.ExpandingCoreFiller;
-import hps.nyu.fa14.solve.TrivialFiller;
+import hps.nyu.fa14.solve.QDynamicProgrammingFiller;
 
 import java.io.File;
 import java.util.List;
@@ -20,6 +20,11 @@ public class SackFiller {
         // TODO: Implement this better
         IFiller f = new ExpandingCoreFiller();
 
+        if(c.problemType == 3){
+            //Quadratic Knapsack Problem (QKP)
+            f = new QDynamicProgrammingFiller();
+        }
+        
         List<Knapsack> solution = f.fill(c);
         printSolution(solution);
         return solution;
