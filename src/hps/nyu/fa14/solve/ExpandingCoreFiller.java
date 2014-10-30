@@ -72,6 +72,7 @@ public class ExpandingCoreFiller extends AbstractFiller {
             }
         }
         
+        bestSolution = QDynamicProgrammingFiller.localSearch(bestSolution,new ArrayList<Item>(c.items.values()));
         sacks.add(bestSolution);
         return sacks;
     }

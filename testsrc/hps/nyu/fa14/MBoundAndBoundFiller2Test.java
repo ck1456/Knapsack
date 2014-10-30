@@ -2,7 +2,6 @@ package hps.nyu.fa14;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import hps.nyu.fa14.solve.ExpandingCoreFiller;
 import hps.nyu.fa14.solve.MBoundAndBoundFiller2;
 
 import java.util.List;
@@ -97,6 +96,7 @@ public class MBoundAndBoundFiller2Test {
         Catalog c = Catalog.parseFile("data/sample_2_3.in");
         IFiller f = new MBoundAndBoundFiller2();
         List<Knapsack> solution = f.fill(c);
+        // Ensure that this is feasible
         for(Knapsack k : solution){
             assertTrue(k.isWeightAcceptable());
         }

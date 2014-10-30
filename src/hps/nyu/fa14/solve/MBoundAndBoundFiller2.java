@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
 
 /**
  * Implements "bound-and-bound" solution as per Martello and Toth
@@ -164,7 +163,7 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
         int u = surrogateRelaxed(items, sumCapacity, x_items, breakItem);
         //System.out.println("UpperBound " + u);
         
-        if(P + u > z){
+        if(P + u > z){  // Upper bound test
             List<List<Item>> y_ = splitAcrossKnapsacks(x_items, capacities);
             
             int z_sum = 0;
@@ -177,11 +176,15 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
             // TODO: Improve the heuristic with some more greedy filling
 
             //System.out.println(String.format("Update new solution? %d + %d = %d > %d", P , z_sum, P + z_sum, z));
-            if(P + z_sum > z){
-                // clear out all values in y > h
+            if(P + z_sum > z){ // lower bound test
+                // clear out all values in y
+                // I don't totally understand why
                 for(int i = 1; i <= m; i++){
-                    for(int j = h + 1; j <= n; j++){
-                        y.get(i).put(allItems[j], false);
+                    for(int j = 1; j <= n; j++){
+                        if(y.get(i).get(allItems[j])){
+//                            System.out.println("Clearing bit for " + allItems[j]);
+                            y.get(i).put(allItems[j], false);
+                        }
                     }
                 }
                 // Copy solution items to y
@@ -247,7 +250,7 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
             y.get(i).put(item_j, false); // exclude item j from knapsack i
             int d_ = d.get(item_j);
             d.put(item_j, i+1);
-            mulbranch(h, P, W, capacities);
+            mulbranch(h, P, W, Arrays.copyOf(capacities, m+1));
             // Find j again, and set d_j = d_
             j = indexMap.get(item_j);
             d.put(item_j, d_);
@@ -256,6 +259,7 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
         
     }
     
+    @SuppressWarnings("unused")
     private void evaluateSolution(Map<Integer, Map<Item, Boolean>> y){
         List<List<Item>> sol = new ArrayList<List<Item>>();
         for(int i = 1; i <= m; i++){
@@ -436,6 +440,7 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
             }
         }
         for(int c = 1; c < capacities.length; c++){
+            @SuppressWarnings("unused")
             int total = 0;
             for(Item i : splits.get(c-1)){
                 total += i.weight;

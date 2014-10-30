@@ -11,17 +11,17 @@ import org.junit.Test;
 public class ExpandingCoreFillerTest {
 
     private int[] maxValues = new int[] { 
-            217778, 
-            1219701, 
-            2530353, 
-            1072651,
+            217867, 
+            1221140, 
+            2533603, 
+            1073052,
             1019957 };
     
     private int[] maxWeights = new int[] { 
-            165218, 
-            894741, 
-            1378076, 
-            961796,
+            165217, 
+            894740, 
+            1378079, 
+            961795,
             768457 };
 
     @Test
@@ -49,8 +49,8 @@ public class ExpandingCoreFillerTest {
         IFiller f = new ExpandingCoreFiller();
         List<Knapsack> solution = f.fill(c);
         Knapsack k0 = solution.get(0);
-        assertEquals(217778, k0.totalValue());
-        assertEquals(165218, k0.currentWeight());
+        assertEquals(217867, k0.totalValue());
+        assertEquals(165217, k0.currentWeight());
         assertTrue(k0.isWeightAcceptable());
     }
 }

@@ -34,7 +34,7 @@
 			<zipfileset dir="." includes="README" prefix="${zip.name}" />
 			<zipfileset dir="src" includes="**/*.java" prefix="${zip.name}/src" />
 			<zipfileset dir="data" includes="*.in" prefix="${zip.name}/data" />
-			<zipfileset dir="spec" includes="*.jar" prefix="${zip.name}/spec" />
+			<zipfileset dir="spec" includes="evaluator" prefix="${zip.name}/spec" />
 			<!--<zipfileset dir="testsrc" includes="**/*.java" prefix="${zip.name}/testsrc" />-->
 		</zip>
 	</target>

@@ -23,7 +23,6 @@ public class QDynamicProgrammingFiller extends AbstractFiller {
         List<Item> orderedItems = orderUpperPlane3_W(c);
         Knapsack k = algo3(c, orderedItems);
 
-//        System.out.println(k);
         return Arrays.asList(k);
     }
 
@@ -127,9 +126,46 @@ public class QDynamicProgrammingFiller extends AbstractFiller {
                 
             }
         }
+        knapsack = localSearch(knapsack, new ArrayList<Item>(c.items.values()));
         return knapsack;
     }
 
+    public static Knapsack localSearch(Knapsack k0, List<Item> items){
+        // Try to optimize by looking at easy to figure out neighbors
+        
+        Knapsack newK = k0.clone();
+        int value = newK.totalValue();
+        // sort items by weight
+        Collections.sort(items, Item.RANK_BY_WEIGHT);
+        
+        // For each element in k, try removing it and then adding back as many other elements as possible and see if we gain
+        for(Item k : new ArrayList<Item>(newK.items)){
+            newK.items.remove(k);
+            
+            // try adding any other items that will fit
+
+            List<Item> addedItems = new ArrayList<Item>();
+            for (Item i : items) {
+                if (i != k) {
+                    if (i.weight < newK.capacity - newK.currentWeight()) {
+                        addedItems.add(i);
+                        newK.items.add(i);
+                    }
+                }
+            }
+            if(newK.totalValue() > value){
+                // We improved!
+                return localSearch(newK, items); 
+            }
+            newK.items.removeAll(addedItems);
+            newK.items.add(k);
+            
+        }
+        
+        return k0; // No improvement
+    }
+    
+    
     private static int getUpperBound_CKP(List<Item> rankedItems, int capacity) {
         int upperBound = 0;
         int i = 0;

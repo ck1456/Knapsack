@@ -27,6 +27,13 @@ public class Item {
         }
     };
     
+    public static Comparator<Item> RANK_BY_WEIGHT = new Comparator<Item>() {
+        @Override
+        public int compare(Item i1, Item i2) {
+            return (int) Math.signum(i2.weight - i1.weight);
+        }
+    };
+    
     @Override
     public String toString(){
         return String.format("[%d] V: %d W: %d V/W:%2f", id, value, weight, (double)value/weight);

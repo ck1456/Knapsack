@@ -34,10 +34,11 @@ public class SackFiller {
         // Make sure to write incremental solutions as we get them
         IFiller pf = new IncrementalProgressFiller(f, outputPath);
         List<Knapsack> solution = pf.fill(c);
-        printSolution(solution);
+        //printSolution(solution);
         return solution;
     }
     
+    @SuppressWarnings("unused")
     private static void printSolution(List<Knapsack> s){
         int totalValue = 0;
         List<Knapsack> ordered = new ArrayList<Knapsack>(s);
