@@ -12,15 +12,15 @@ import org.junit.Test;
 public class QDynamicProgrammingFillerTest {
 
     private int[] maxValues = new int[] { 
-            173431, 
-            2017, 
+            171225, 
+            2414, 
             0, 
-            26385,
-            92708 };
+            27097,
+            98001 };
     
     private int[] maxWeights = new int[] { 
             2466, 
-            154, 
+            155, 
             0, 
             568,
             1220 };
@@ -50,7 +50,7 @@ public class QDynamicProgrammingFillerTest {
         IFiller f = new QDynamicProgrammingFiller();
         List<Knapsack> solution = f.fill(c);
         Knapsack k0 = solution.get(0);
-        assertEquals(173431, k0.totalValue());
+        assertEquals(171225, k0.totalValue());
         assertEquals(2466, k0.currentWeight());
         assertTrue(k0.isWeightAcceptable());
     }

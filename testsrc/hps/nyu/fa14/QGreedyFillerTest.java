@@ -16,7 +16,7 @@ public class QGreedyFillerTest {
         IFiller f = new QGreedyFiller();
         List<Knapsack> solution = f.fill(c);
         Knapsack k0 = solution.get(0);
-        assertEquals(187955, k0.totalValue());
+        assertEquals(187896, k0.totalValue());
         assertEquals(2459, k0.currentWeight());
         assertTrue(k0.isWeightAcceptable());
     }

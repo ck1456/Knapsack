@@ -132,8 +132,16 @@ public class Catalog {
                 if(profits.length != (objectCount + 1) - i){
                     throw new RuntimeException(String.format("unexpected number of columns: %d", profits.length));
                 }
-                for(int j = 0; j < objectCount - i + 1; j++){
-                    c.profitMatrix[i][i+j] = Integer.parseInt(profits[j]);
+                // NOTE: This stores the matrix internally in a different representation than in the file
+                // but this follows the literature better
+                if(i == 1){ // Rotate the first row down to the diagonal
+                    for (int j = 0; j < objectCount - i + 1; j++) {
+                        c.profitMatrix[j + 1][j + 1] = Integer.parseInt(profits[j]);
+                    }
+                } else {
+                    for (int j = 0; j < objectCount - i + 1; j++) {
+                        c.profitMatrix[i - 1][i + j] = Integer.parseInt(profits[j]);
+                    }
                 }
             }
             break;

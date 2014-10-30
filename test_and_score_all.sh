@@ -12,7 +12,7 @@ do
   echo "${infile}"
   java -jar SackFiller.jar ${infile} ${outfile}
 
-  ./evaluator "${infile}" "${outfile}"
+  ./spec/evaluator "${infile}" "${outfile}"
 done
 echo
 
@@ -26,7 +26,7 @@ do
   echo "${infile}"
   java -jar SackFiller.jar ${infile} ${outfile}
 
-  ./evaluator "${infile}" "${outfile}"
+  ./spec/evaluator "${infile}" "${outfile}"
 done
 echo
 
@@ -40,7 +40,7 @@ do
   echo "${infile}"
   java -jar SackFiller.jar ${infile} ${outfile}
 
-  ./evaluator "${infile}" "${outfile}"
+  ./spec/evaluator "${infile}" "${outfile}"
 done
 echo
 

@@ -115,7 +115,6 @@ public class QDynamicProgrammingFiller extends AbstractFiller {
             }
         }
 
-        //int weight = 0;
         // Construct set of included items
         int r = r_star;
         for (int i = n; i >= 1; i--) {
