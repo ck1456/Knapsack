@@ -219,7 +219,6 @@ public class MBoundAndBoundFiller extends AbstractFiller {
             i++;
         } while (i < m);
         i = m - 1;
-
        
         // backtrack
         do {

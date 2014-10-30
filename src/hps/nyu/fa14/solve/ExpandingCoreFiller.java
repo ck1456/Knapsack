@@ -38,7 +38,7 @@ public class ExpandingCoreFiller extends AbstractFiller {
         bestSolution = breakSolution;
         
         // TODO: Pick these a little better
-        for(int core = 10; core < 400; core += 10){
+        for(int core = 50; core < 250; core += 50){
             
             // Defines an interval to explore
             int iStart = Math.max(breakItem - core, 0);
