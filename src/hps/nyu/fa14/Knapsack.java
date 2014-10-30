@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -103,4 +104,18 @@ public class Knapsack {
     public static void writeFile(Knapsack knapsack, String filepath) throws FileNotFoundException, IOException{
         writeFile(Arrays.asList(knapsack), filepath);
     }
+    
+    public static Comparator<Knapsack> SORT_BY_CAPACITY = new Comparator<Knapsack>() {
+        @Override
+        public int compare(Knapsack k1, Knapsack k2) {
+            return (int) Math.signum(k1.capacity - k2.capacity);
+        }
+    };
+    
+    public static Comparator<Knapsack> SORT_BY_ID = new Comparator<Knapsack>() {
+        @Override
+        public int compare(Knapsack k1, Knapsack k2) {
+            return (int) Math.signum(k1.id - k2.id);
+        }
+    };
 }

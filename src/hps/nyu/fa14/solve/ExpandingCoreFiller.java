@@ -64,7 +64,7 @@ public class ExpandingCoreFiller extends AbstractFiller {
             Knapsack subK = subSolutions.get(0);
             
             // Combine with non-core solution
-            updateBest(makeSolution(breakSolution, core, subK));
+            updateBest(makeSolution(breakSolution, breakItem - iStart, subK));
             // TODO: Consider termination condition if fill ratio is 1.0
             if(subK.currentWeight() == subK.capacity){
                 // Filled exactly, abort
@@ -91,7 +91,6 @@ public class ExpandingCoreFiller extends AbstractFiller {
     }
     
     private Knapsack makeSolution(Knapsack breakSolution, int removeCount, Knapsack subSolution){
-        
         Knapsack newK = breakSolution.clone();
         for(int i = 0; i < removeCount; i++){
             newK.items.remove(newK.items.size()-1);

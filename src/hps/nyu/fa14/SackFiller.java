@@ -1,10 +1,12 @@
 package hps.nyu.fa14;
 
 import hps.nyu.fa14.solve.ExpandingCoreFiller;
-import hps.nyu.fa14.solve.GreedyFiller;
+import hps.nyu.fa14.solve.MBoundAndBoundFiller2;
 import hps.nyu.fa14.solve.QDynamicProgrammingFiller;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,7 +25,7 @@ public class SackFiller {
 
         if(c.problemType == 2){
             // Multiple Knapsack Problem (MKP)
-            f = new GreedyFiller();
+            f = new MBoundAndBoundFiller2();
         } else if(c.problemType == 3){
             // Quadratic Knapsack Problem (QKP)
             f = new QDynamicProgrammingFiller();
@@ -36,7 +38,9 @@ public class SackFiller {
     
     private static void printSolution(List<Knapsack> s){
         int totalValue = 0;
-        for(Knapsack k : s){
+        List<Knapsack> ordered = new ArrayList<Knapsack>(s);
+        Collections.sort(ordered, Knapsack.SORT_BY_ID);
+        for(Knapsack k : ordered){
             totalValue += k.totalValue();
             System.out.println(k);
         }

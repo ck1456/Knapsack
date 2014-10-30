@@ -26,4 +26,9 @@ public class Item {
                     - ((double)i2.value / i2.weight));
         }
     };
+    
+    @Override
+    public String toString(){
+        return String.format("[%d] V: %d W: %d V/W:%2f", id, value, weight, (double)value/weight);
+    }
 }

@@ -16,6 +16,7 @@ import java.util.Map;
  * Implements "bound-and-bound" solution as per Martello and Toth
  * 
  * Resources: http://www.or.deis.unibo.it/kp/Chapter6.pdf
+ *            http://www.diku.dk/~pisinger/95-1.pdf
  */
 public class MBoundAndBoundFiller2 extends AbstractFiller {
 
@@ -33,29 +34,23 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
         }
 
         // sort the capacities
+        List<Knapsack> sacks = c.getAllEmptyKnapsacks();
+        Collections.sort(sacks, Knapsack.SORT_BY_CAPACITY);
         int[] capacities = new int[m + 1];
-        List<Integer> sortC = new ArrayList<Integer>();
         for (int k = 1; k <= m; k++) {
-            sortC.add(c.knapsackCapacities[k]);
-        }
-        Collections.sort(sortC);
-        for (int i = 0; i < sortC.size(); i++) {
-            capacities[i + 1] = sortC.get(i);
+            capacities[k] = sacks.get(k-1).capacity;
         }
 
         mulknap(n, m, c.getItemsSortedByRatio(), capacities);
         
         // turn the solution back into knapsacks
-        List<Knapsack> sacks = new ArrayList<Knapsack>();
-        for(Knapsack k : c.getAllEmptyKnapsacks()){
+        for(int k = 1; k <= m; k++){
             for(int j = 1; j <= n; j++){
-                if(x[k.id][j]){
-                    k.items.add(c.items.get(j));
+                if(x.get(k).get(items[j])){
+                    sacks.get(k-1).items.add(items[j]);
                 }
             }
-            sacks.add(k);
         }
-        
         return sacks;
     }
 
@@ -64,35 +59,42 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
     private int z;
     private int n;
     private int m;
-    private boolean[][] x;
-    private boolean[][] y;
-    //private int[] d_j;
+
+    private Map<Integer, Map<Item, Boolean>> x = new HashMap<Integer, Map<Item, Boolean>>();
+    private Map<Integer, Map<Item, Boolean>> y = new HashMap<Integer, Map<Item, Boolean>>();
+    
     private Map<Item, Integer> d = new HashMap<Item, Integer>();
     
     private void mulknap(int n, int m, List<Item> items, int[] capacities){
         
         this.n = n;
         this.m = m;
-//        d_j = new int[n + 1];
-//        for(int j = 1; j <= n; j++){
-//            d_j[j] = 1;
-//        }
         allItems = new Item[n+1];
         for(int j = 1; j <= n; j++){
             allItems[j] = items.get(j-1);
         }
         buildIndexMap();
-        for(Item i : items){
-            d.put(i, 1);
+        for(Item j : items){
+            d.put(j, 1);
         }
         
-        x = new boolean[m + 1][n + 1];
-        y = new boolean[m + 1][n + 1];
+        for(int i = 1; i <= m; i++){
+            x.put(i, new HashMap<Item, Boolean>());
+            for(Item j : items){
+                x.get(i).put(j, false);
+            }
+        }
+        
+        for(int i = 1; i <= m; i++){
+            y.put(i, new HashMap<Item, Boolean>());
+            for(Item j : items){
+                y.get(i).put(j, false);
+            }
+        }
+        
         z = 0;
         
         mulbranch(0, 0, 0, capacities);
-        
-        
     }
     
     private void buildIndexMap(){
@@ -103,7 +105,7 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
     }
     
     private void mulbranch(int h, int P, int W, int[] capacities){
-        
+        //System.out.println(String.format("mulbranch(%d, %d, %d, ...)", h, P, W));
         for (int i = 1; i <= m; i++) {
             // get free variables
             List<Item> items = new ArrayList<Item>();
@@ -127,12 +129,10 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
         }
         
         Item[] breakItem = new Item[1];
-        List<Item> x_items = surrogateRelaxed(items, sumCapacity, breakItem);
+        List<Item> x_items = new ArrayList<Item>();
                 
-        int u = 0;
-        for(Item i : x_items){
-            u += i.value;
-        }
+        int u = surrogateRelaxed(items, sumCapacity, x_items, breakItem);
+        //System.out.println("UpperBound " + u);
         
         if(P + u > z){
             List<List<Item>> y_ = splitAcrossKnapsacks(x_items, capacities);
@@ -143,43 +143,45 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
                     z_sum += i.value;
                 }
             }
-            
+            //System.out.println("Optimal profit sum " + z_sum);
             // TODO: Improve the heuristic with some more greedy filling
-            
+
+            //System.out.println(String.format("Update new solution? %d + %d = %d > %d", P , z_sum, P + z_sum, z));
             if(P + z_sum > z){
                 // clear out all values in y > h
                 for(int i = 1; i <= m; i++){
                     for(int j = h + 1; j <= n; j++){
-                        y[i][j] = false;
+                        y.get(i).put(allItems[j], false);
                     }
                 }
                 // Copy solution items to y
                 for(int i = 1; i <= y_.size(); i++){
                     List<Item> y_i = y_.get(i-1);
                     for(Item j : y_i){
-                        int j_id = indexMap.get(j);
-                        // Need to set other things to false
-                        y[i][j_id] = true;
+                        y.get(i).put(j, true);
                     }
                 }
+                // check that this matches the solution above
+                //evaluateSolution(y);
                 
                 // Copy y to x
                 for(int i = 1; i <= m; i++){
                     for(int j = 1; j <= n; j++){
-                        x[i][j] = y[i][j];
+                        Item item_j = allItems[j];
+                        x.get(i).put(item_j, y.get(i).get(item_j));
                     }
                 }
-                
+                //System.out.println("Update z: " + z + " --> " + (P + z_sum));
                 z = P + z_sum;
             }
         }
 
         // solution does not meet upper-bound
+        //System.out.println(String.format("Solution meets upper bound? %d + %d = %d > %d", P , u, P + u, z));
         if(P + u > z){
             // Reduce items
             h = reduceItems(h, sumCapacity, breakItem[0]);
             // Find the smallest knapsack
-            
             int i = -1;
             int c_i = Integer.MAX_VALUE;
             for(int c = 1; c <= m; c++){
@@ -200,14 +202,17 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
             buildIndexMap();  // make sure you can find these items later
             
             int j = h+1;
-            y[i][j] = true; // assign item j to knapsack i
-            int[] newCapacities = Arrays.copyOf(capacities, m+1);
             Item item_j = allItems[j];
+            //System.out.println(">>> Branch: Include " + j);
+            y.get(i).put(item_j, true); // assign item j to knapsack i
+            int[] newCapacities = Arrays.copyOf(capacities, m+1);
             int p_j = item_j.value;
             int w_j = item_j.weight;
             newCapacities[i] = newCapacities[i] - w_j;
             mulbranch(h+1, P+p_j, W + w_j, newCapacities);
-            y[i][j] = false; // exclude item j from knapsack i
+            
+            //System.out.println("<<< Branch: Exclude " + j);
+            y.get(i).put(item_j, false); // exclude item j from knapsack i
             int d_ = d.get(item_j);
             d.put(item_j, i+1);
             mulbranch(h, P, W, capacities);
@@ -219,8 +224,32 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
         
     }
     
+    private void evaluateSolution(Map<Integer, Map<Item, Boolean>> y){
+        List<List<Item>> sol = new ArrayList<List<Item>>();
+        for(int i = 1; i <= m; i++){
+            List<Item> k = new ArrayList<Item>();
+            for(int j = 1; j <= n; j++){
+                Item item_j = allItems[j];
+                if(y.get(i).get(item_j)){
+                    k.add(item_j);
+                }
+            }
+            sol.add(k);
+        }
+        for(int i = 1; i <=m; i++){
+            int w_k = 0;
+            int p_k = 0;
+            for(Item j : sol.get(i-1)){
+                w_k += j.weight;
+                p_k += j.value;
+            }
+            System.out.println(String.format("[%d] Weight %d Value: %d", i, w_k, p_k));
+        }
+    }
+    
     private Item solveKPFor_l(int h, int capacity){
         
+        //System.out.println("SolveKP: " + capacity + " for h=" + h);
         //Get free items
         List<Item> items = new ArrayList<Item>();
         for(int j = h; j <= n; j++){
@@ -243,21 +272,32 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
                 best = i;
             }
         }
+        //System.out.println("Best " + best);
         return best;
     }
     
     // Reduce items by using some upper bound tests and swap the reduced items into
     // the first positions, increasing h; 
     private int reduceItems(int h, int c, Item breakItem){
-        
+        //System.out.println(String.format("reduceItems(%d, %d, [%s])", h, c, breakItem));
+        //int priorH = h;
         // find the breakItem
-        int b = indexMap.get(breakItem);
-        for(int j = h; j <= n; j++){
+        int p_b = 0;
+        int w_b = 0;
+        
+        for(int j = h + 1; j <= n; j++){
+            
+            int b = n+1;
+            if(breakItem != null){
+                b = indexMap.get(breakItem);
+                p_b = breakItem.value;
+                w_b = breakItem.weight;
+            }
             
             // calculate u_1
             int p_sum = 0;
             int w_sum = 0;
-            for(int i = h; i < b; i++){
+            for(int i = h+1; i < b; i++){
                 p_sum += allItems[i].value;
                 w_sum += allItems[i].weight;
             }
@@ -265,21 +305,30 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
             int w_j = allItems[j].weight;
             int remaining = c - w_sum - w_j;
             
-            int u_1 = (int)Math.floor(p_sum + p_j + ((double)remaining * ((double)breakItem.value / breakItem.weight)));
+            int u_1 = p_sum + p_j;
+            if(p_b > 0){
+                u_1 += ((double)remaining * ((double)p_b / w_b));
+            }
+            
+            u_1 = (int)Math.floor(u_1);
+            
             if(u_1 <= z){
+                //System.out.println(String.format("%d <= %d so swap j: %d <--> %d", u_1, z, j, h+1));
                 // swap this item to the front
-                Item temp = allItems[h];
-                allItems[h] = allItems[j];
+                Item temp = allItems[h+1];
+                allItems[h+1] = allItems[j];
                 allItems[j] = temp;
                 buildIndexMap(); // keep in sync with allItems
                 h++;
+                j++;
             }
         }
         
+        //System.out.println(String.format("Reduced items: %d --> %d", priorH, h));
         return h;
     }
     
-    // shrink ... and then reorder?
+    // shrink
     private static int tightenCapacity(int c, List<Item> items) {
 
         int[] weights = new int[items.size()];
@@ -287,16 +336,21 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
             weights[i] = items.get(i).weight;
         }
 
+        //System.out.println(String.format("%d x %d", c, weights.length));
+        if((double)c * weights.length > 2e8 ){
+            return c; // Cannot tighten in memory
+        }
         int newC = 0;
         for (int index : getMaxValue(c, weights, weights.length)) {
             newC += items.get(index).weight;
         }
 
+        //System.out.println(String.format("Tighten capacity: %d -> %d", c, newC));
         return newC;
     }
     
-    // provides a lowerbound and feasible solution
-    private List<Item> surrogateRelaxed(List<Item> items, int capacity, Item[] breakItem){
+    // provides an upperbound and returns the objective value
+    private int surrogateRelaxed(List<Item> items, int capacity, List<Item> x_items, Item[] breakItem){
         // order and greedily fill to find a feasible solution 
         Catalog c = new Catalog(1, items.size(), Arrays.asList(capacity));
         for(Item i : items){
@@ -305,12 +359,24 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
         GreedyFiller f = new GreedyFiller();
         Knapsack k = f.fill(c).get(0);
         
+        //System.out.println("Surrogate relaxed upper bound: " + k.totalValue() + " on " + items.size() + " items");
         List<Item> sorted = c.getItemsSortedByRatio();
         for(Item i : k.items){
             sorted.remove(i);
         }
-        breakItem[0] = sorted.get(0);
-        return k.items;
+        int u = k.totalValue();
+        if(sorted.size() > 0){
+            breakItem[0] = sorted.get(0);
+            int capacityRemaining = capacity - k.currentWeight();
+            u += (int)((double)breakItem[0].value * ((double)capacityRemaining / breakItem[0].weight));
+            //System.out.println(String.format("Surrogate relaxed breakItem : %d | %d", breakItem[0].value, breakItem[0].weight));
+            //System.out.println("Object value (upper Bound u): " + u);
+            k.items.add(breakItem[0]);
+        } else {
+            //System.out.println("Out of objects, breakItem will be null");
+        }
+        x_items.addAll(k.items);
+        return u;
     }
     
     
@@ -327,6 +393,8 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
                 weight[i] = items.get(i).weight;
             }
             
+            //System.out.println(String.format("%d x %d", capacities[c], weight.length));
+            
             List<Integer> includedIndexes = getMaxValue(capacities[c], weight, weight.length);
             for(int index : includedIndexes){
                 splits.get(c-1).add(items.get(index));
@@ -335,6 +403,14 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
                 items.remove(index);
             }
         }
+        for(int c = 1; c < capacities.length; c++){
+            int total = 0;
+            for(Item i : splits.get(c-1)){
+                total += i.weight;
+            }
+            //System.out.println(String.format("Split [%d] Items: %d Total: %d", capacities[c], splits.get(c-1).size(), total));
+        }
+        
         return splits;
     }
 

@@ -2,6 +2,7 @@
 
 datadir="data/"
 solndir="soln/"
+invoke="java -Xmx1g -jar SackFiller.jar"
 #Problem 1
 echo "Problem 1"
 prob="sample_1"
@@ -10,7 +11,7 @@ do
   infile="${datadir}${prob}_${n}.in"
   outfile="${solndir}${prob}_${n}.out"
   echo "${infile}"
-  java -jar SackFiller.jar ${infile} ${outfile}
+  ${invoke} ${infile} ${outfile}
 done
 echo
 
@@ -22,7 +23,7 @@ do
   infile="${datadir}${prob}_${n}.in"
   outfile="${solndir}${prob}_${n}.out"
   echo "${infile}"
-  java -jar SackFiller.jar ${infile} ${outfile}
+  ${invoke} ${infile} ${outfile}
 done
 echo
 
@@ -34,7 +35,7 @@ do
   infile="${datadir}${prob}_${n}.in"
   outfile="${solndir}${prob}_${n}.out"
   echo "${infile}"
-  java -jar SackFiller.jar ${infile} ${outfile}
+  ${invoke} ${infile} ${outfile}
 done
 echo
 
