@@ -36,7 +36,7 @@ public class MBoundAndBoundFiller2Test {
             10034 };
 
     
-    //@Test
+    @Test
     public void test_2_all() throws Exception {
        for(int i = 0; i < 4; i++){
            testFile(i);
@@ -93,7 +93,12 @@ public class MBoundAndBoundFiller2Test {
     }
     
     @Test
-    public void test_2_2() throws Exception {
-        testFile(3);
+    public void test_2_3() throws Exception {
+        Catalog c = Catalog.parseFile("data/sample_2_3.in");
+        IFiller f = new MBoundAndBoundFiller2();
+        List<Knapsack> solution = f.fill(c);
+        for(Knapsack k : solution){
+            assertTrue(k.isWeightAcceptable());
+        }
     }
 }

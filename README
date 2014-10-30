@@ -13,10 +13,25 @@ Copy the zip file to an energon machine and unzip:
 
 The SackFiller.jar in this directory is the tool used to generate solutions.
 You can invoke it with two command line arguments <input> <output>:
-> java -jar SackFiller.jar sample_1_0.in sample_1_0.out
+> java -Xmx1g -jar SackFiller.jar sample_1_0.in sample_1_0.out
+
+*** NOTE *** : For many instances of the problem we trade memory space
+for execution speed and it is necessary to allocate a bit more memory to
+the java heap in order facilitate this.  The "-Xmx1g" argument to java is required.
 
 If necessary you can rebuild the jar file by using the included ant build script:
 > ant clean
 > ant
 
 Other Helpful Hints:
+We also supplied an automation script which can generate results for all problem sets
+and evaluate the results.  Assuming that all of the inputs are in:
+    data/
+and that the evaluator program is located at:
+    spec/evaluator
+
+Then you can run:
+$ chmod 755 test_and_score_all.sh
+$ chmod 755 spec/evaluator
+$ test_and_score_all.sh
+This will store solutions in soln/ and output results for each test.

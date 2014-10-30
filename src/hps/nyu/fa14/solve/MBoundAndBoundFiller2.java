@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 /**
  * Implements "bound-and-bound" solution as per Martello and Toth
@@ -23,6 +24,7 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
     @Override
     public List<Knapsack> fill(Catalog c) {
 
+        this.c = c;
         int n = c.objectCount;
         int m = c.knapsackCount;
 
@@ -34,26 +36,54 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
         }
 
         // sort the capacities
-        List<Knapsack> sacks = c.getAllEmptyKnapsacks();
-        Collections.sort(sacks, Knapsack.SORT_BY_CAPACITY);
+        sortedKnapsacks = c.getAllEmptyKnapsacks();
+        Collections.sort(sortedKnapsacks, Knapsack.SORT_BY_CAPACITY);
         int[] capacities = new int[m + 1];
         for (int k = 1; k <= m; k++) {
-            capacities[k] = sacks.get(k-1).capacity;
+            capacities[k] = sortedKnapsacks.get(k-1).capacity;
         }
 
         mulknap(n, m, c.getItemsSortedByRatio(), capacities);
         
         // turn the solution back into knapsacks
+        List<Knapsack> solution = getCurrentSolution();
+        updateIfBest(solution);
+        return solution;
+    }
+    
+    private List<Knapsack> getCurrentSolution(){
+        List<Knapsack> sacks = new ArrayList<Knapsack>();
         for(int k = 1; k <= m; k++){
+            sacks.add(sortedKnapsacks.get(k-1).clone());
             for(int j = 1; j <= n; j++){
-                if(x.get(k).get(items[j])){
-                    sacks.get(k-1).items.add(items[j]);
+                if(x.get(k).get(allItems[j])){
+                    sacks.get(k-1).items.add(allItems[j]);
                 }
             }
         }
         return sacks;
     }
+    
+    private List<Knapsack> bestSolution;
+    private int bestValue;
+    
+ // TODO: refactor this into base class
+    private void updateIfBest(List<Knapsack> s) {
+        synchronized (c) {
+            int newValue = 0;
+            for(Knapsack k : s){
+                newValue += k.totalValue();
+            }
+            if (newValue > bestValue) {
+                bestSolution = s;
+                bestValue = newValue;
+                notifyNewSolution(bestSolution);
+            }
+        }
+    }
 
+    private Catalog c;
+    private List<Knapsack> sortedKnapsacks;
     private Item[] allItems;
     private Map<Item, Integer> indexMap = new HashMap<Item, Integer>();
     private int z;
@@ -165,6 +195,7 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
                 //evaluateSolution(y);
                 
                 // Copy y to x
+                // **************** NEW SOLUTION ***************
                 for(int i = 1; i <= m; i++){
                     for(int j = 1; j <= n; j++){
                         Item item_j = allItems[j];
@@ -173,6 +204,7 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
                 }
                 //System.out.println("Update z: " + z + " --> " + (P + z_sum));
                 z = P + z_sum;
+                updateIfBest(getCurrentSolution());
             }
         }
 
@@ -337,7 +369,7 @@ public class MBoundAndBoundFiller2 extends AbstractFiller {
         }
 
         //System.out.println(String.format("%d x %d", c, weights.length));
-        if((double)c * weights.length > 2e8 ){
+        if((double)c * weights.length > 1e8 ){
             return c; // Cannot tighten in memory
         }
         int newC = 0;

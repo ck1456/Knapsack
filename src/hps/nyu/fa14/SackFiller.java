@@ -1,6 +1,7 @@
 package hps.nyu.fa14;
 
 import hps.nyu.fa14.solve.ExpandingCoreFiller;
+import hps.nyu.fa14.solve.IncrementalProgressFiller;
 import hps.nyu.fa14.solve.MBoundAndBoundFiller2;
 import hps.nyu.fa14.solve.QDynamicProgrammingFiller;
 
@@ -18,11 +19,10 @@ import java.util.List;
  */
 public class SackFiller {
 
-    private static List<Knapsack> fill(Catalog c) {
+    private static List<Knapsack> fill(Catalog c, String outputPath) {
 
-        // TODO: Implement this better
-        IFiller f = new ExpandingCoreFiller();
-
+        // Configure the desired filler based on the problem type
+        IFiller f = new ExpandingCoreFiller();  // Default for SKP
         if(c.problemType == 2){
             // Multiple Knapsack Problem (MKP)
             f = new MBoundAndBoundFiller2();
@@ -31,7 +31,9 @@ public class SackFiller {
             f = new QDynamicProgrammingFiller();
         }
         
-        List<Knapsack> solution = f.fill(c);
+        // Make sure to write incremental solutions as we get them
+        IFiller pf = new IncrementalProgressFiller(f, outputPath);
+        List<Knapsack> solution = pf.fill(c);
         printSolution(solution);
         return solution;
     }
@@ -58,11 +60,19 @@ public class SackFiller {
         String outputFile = args[1];
 
         Catalog c = Catalog.parseFile(inputFile);
-        List<Knapsack> solution = fill(c);
-
+        
         // Make directory for the output file if it does not exist
         File outFile = new File(outputFile);
         outFile.getAbsoluteFile().getParentFile().mkdirs();
+        
+        List<Knapsack> solution = fill(c, outputFile);
+        // Only write if it is acceptable
+        for(Knapsack k : solution){
+            if(!k.isWeightAcceptable()){
+                System.err.println("Achieved a non-feasible solution");
+                return;
+            }
+        }
         Knapsack.writeFile(solution, outputFile);
     }
 
