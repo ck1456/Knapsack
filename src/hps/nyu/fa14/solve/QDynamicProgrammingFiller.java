@@ -8,9 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Implements combination of heuristics plus local search
@@ -62,7 +60,7 @@ public class QDynamicProgrammingFiller extends AbstractFiller {
             // get upper bound
             p_i += getUpperBound_CKP(subItems, capacity);
             pItems[i].p = p_i;
-            pItems[i].p_w = (double) p_i / pItems[i].item.weight;
+            pItems[i].p_w = (double) pItems[i].p / pItems[i].item.weight;
         }
 
         List<Item> sortedItems = new ArrayList<Item>();

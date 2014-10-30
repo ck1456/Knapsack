@@ -10,6 +10,9 @@ import java.util.List;
 /**
  * Calculates the weight to value ratio for each item and adds them in
  * descending order until no more can be added
+ * 
+ * Implements a greedy feasible solution as a lower bound for MKP
+ * Uses partial solutions to CKP for each knapsack
  */
 public class GreedyFiller extends AbstractFiller {
 
@@ -50,7 +53,4 @@ public class GreedyFiller extends AbstractFiller {
 
         return sacks;
     }
-
-    // TODO: Need a different ordering for quadratic knapsack problem types
-
 }

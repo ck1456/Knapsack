@@ -11,8 +11,6 @@ do
   outfile="${solndir}${prob}_${n}.out"
   echo "${infile}"
   java -jar SackFiller.jar ${infile} ${outfile}
-
-  ./evaluator "${infile}" "${outfile}"
 done
 echo
 
@@ -25,8 +23,6 @@ do
   outfile="${solndir}${prob}_${n}.out"
   echo "${infile}"
   java -jar SackFiller.jar ${infile} ${outfile}
-
-  ./evaluator "${infile}" "${outfile}"
 done
 echo
 
@@ -39,8 +35,6 @@ do
   outfile="${solndir}${prob}_${n}.out"
   echo "${infile}"
   java -jar SackFiller.jar ${infile} ${outfile}
-
-  ./evaluator "${infile}" "${outfile}"
 done
 echo
 
